@@ -1,4 +1,4 @@
-name: Run Flask Website with Ngrok
+name: Set up Ubuntu SSH Server with Ngrok
 
 on:
   push:
@@ -13,32 +13,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - name: Set up Ngrok
+        run: |
+          mkdir -p ~/.ngrok2
+          echo "authtoken: 20YJqKVggkIUaguqD4E94ZcVQlX_7Hufpa4qNMFZD84pfSSRA" > ~/.ngrok2/ngrok.yml  # Replace YOUR_NGROK_AUTH_TOKEN with your actual Ngrok authentication token
 
       - name: Start Ngrok
         run: |
-          docker run -d --rm -p 4040:4040 --name ngrok wernight/ngrok tail -f /dev/null
+          curl -s https://ngrok.com/download | tar xz
+          ./ngrok authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
+          ./ngrok tcp 22 --log=stdout > ngrok.log &
 
-      - name: Update ngrok
+      - name: Wait for Ngrok tunnel URL
         run: |
-          docker exec ngrok ngrok update
+          sleep 10  # Wait for Ngrok to establish the tunnel
+          export NGROK_URL=$(cat ngrok.log | grep -oE "tcp://[0-9a-z.:]+")
+          echo "Ngrok URL: $NGROK_URL"
 
-      - name: Wait for Ngrok URL
-        run: |
-          sleep 5  # Wait for Ngrok to start
-          echo "Ngrok URL: http://localhost:4040"
+      - name: Install OpenSSH server
+        run: sudo apt-get install openssh-server -y
 
-      - name: Perform additional steps with Ngrok URL
+      - name: Generate SSH key
+        run: ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -q -N ""
+
+      - name: Print public key
+        run: cat ~/.ssh/id_rsa.pub
+
+      - name: Set up SSH config
         run: |
-          # Use the Ngrok URL in your further deployment or testing steps
-          # Example: Send the Ngrok URL to an external service for integration testing
-          echo "Ngrok URL: http://localhost:4040"
+          echo "Host github-ssh" >> ~/.ssh/config
+          echo "  Hostname ${{ env.NGROK_URL#tcp:// }}" >> ~/.ssh/config
+          echo "  User ubuntu" >> ~/.ssh/config
+          echo "  Port 22" >> ~/.ssh/config
+          echo "  IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
+          echo "  StrictHostKeyChecking no" >> ~/.ssh/config
+          echo "  UserKnownHostsFile=/dev/null" >> ~/.ssh/config
+
+      - name: Print SSH config
+        run: cat ~/.ssh/config
+
+      - name: Print connection command
+        run: echo "Run 'ssh github-ssh' to connect to the Ubuntu SSH server."
+
+      - name: Print connection information
+        run: echo "Connection Information: ${{ env.NGROK_URL#tcp:// }}"
