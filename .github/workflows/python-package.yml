@@ -24,11 +24,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Update ngrok
-        run: ngrok update
-
       - name: Start Ngrok
-        run: docker run -d --rm -p 4040:4040 --name ngrok wernight/ngrok ngrok http 5000
+        run: |
+          docker run -d --rm -p 4040:4040 --name ngrok wernight/ngrok tail -f /dev/null
+
+      - name: Update ngrok
+        run: |
+          docker exec ngrok ngrok update
 
       - name: Wait for Ngrok URL
         run: |
