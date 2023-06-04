@@ -1,4 +1,4 @@
-name: Run Flask Website
+name: Run Flask Website with Ngrok
 
 on:
   push:
@@ -24,5 +24,24 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Flask website
-        run: python main.py
+      - name: Start Flask website
+        run: python main.py &
+
+      - name: Install Ngrok
+        run: |
+          wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+          unzip ngrok-stable-linux-amd64.zip
+
+      - name: Start Ngrok
+        run: ./ngrok http 5000  # Change the port number if your Flask app runs on a different port
+
+      - name: Wait for Ngrok URL
+        run: |
+          sleep 5  # Wait for Ngrok to start
+          echo "Ngrok URL: ${{ steps.start_ngrok.outputs.ngrok_url }}"
+      
+      - name: Perform additional steps with Ngrok URL
+        run: |
+          # Use the Ngrok URL in your further deployment or testing steps
+          # Example: Send the Ngrok URL to an external service for integration testing
+          echo "Ngrok URL: ${{ steps.start_ngrok.outputs.ngrok_url }}"
