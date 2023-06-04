@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+    You are banned from FlashForum!
+{% endblock %}
+
+{% block content %}
+    <h1 style="color: red" align="center">You are banned!</h1>
+    <h2>You are banned from FlashForum for unknown reasons!</br></h2>
+<h3>Recent reasons of ban:</br>
+- Racist activity</br>
+- Swearing</br>
+- Posting content about war on Ukraine</h3>
+
+<form method="POST">
+        <textarea name="appeal" id="appeal" class="form-control"></textarea>
+        <br />
+        <div align="center">
+            <button type="submit" class="btn btn-primary">Appeal</button>
+        </div>
+    </form>
+{% endblock %}

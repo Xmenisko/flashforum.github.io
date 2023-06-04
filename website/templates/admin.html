@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}
+    FlashForum Admin Panel
+{% endblock %}
+
+{% block content %}
+{% if current_user.id in admins %}
+<h1 align="center" style="color: red">Admin panel</h1>
+<h2 align="center" style="color: gray">Admin ID: #{{ current_user.id }}</h2>
+
+<form method="POST" action="{{ url_for('views.admin') }}">
+</br>
+    <textarea name="user_id" id="user_id" class="form-control" placeholder="Create variable"></textarea>
+    </br>
+    <div align="center">
+        <button type="submit" class="btn btn-danger btn-sm">Variable</button>
+    </div>
+</form>
+
+{% endif %}
+
+{% if not current_user.id in admins %}
+<h1 style="color: red" align="center">You don't have access to the admin panel!</h1>
+<center><a href="/" class="btn btn-primary">Go back</a></center>
+{% endif %}
+{% endblock %}

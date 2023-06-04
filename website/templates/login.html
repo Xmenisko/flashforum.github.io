@@ -1,0 +1,24 @@
+{% extends "base.html" %} {% block title %}FlashForum Login{% endblock %}
+
+{% block content %}
+<form method="POST">
+    <h3 align="center">Login to FlashForum</h3>
+    <div class="from-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="example@email.com"/>
+    </div>
+    </br>
+    <div class="from-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="MyPassword123"/>
+    </div>
+    <br />
+
+    <center><button type="submit" class="btn btn-primary">Login to account</button></center>
+    </br>
+    <center><a href="/sign-up" class="btn btn-secondary">I don't have account yet</a></center>
+
+
+</form>
+
+{% endblock %}
