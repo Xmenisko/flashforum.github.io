@@ -51,7 +51,6 @@ jobs:
         run: cat ~/.ssh/id_rsa.pub
 
       - name: Print connection command
-        run: echo "Run 'ssh -p 22 ubuntu@${{ env.NGROK_URL }}' to connect to the Ubuntu SSH server."
+        run: echo "Run 'ssh -p 22 ubuntu@${{ env.NGROK_URL:6 }}' to connect to the Ubuntu SSH server."
 
-      - name: Print connection information
-        run: echo "Connection Information: ${{ env.NGROK_URL }}"
+
